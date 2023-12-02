@@ -43,6 +43,7 @@ export default function App() {
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [selectedMovie, setSelectedMovie] = useState(null);
+  const [results, setResults] = useState(null);
 
   const handleSearch = (query) => {
     setSearch(query);
@@ -67,7 +68,7 @@ export default function App() {
       try {
         setErrorMessage("");
         const request = await fetch(
-          `http://www.omdbapi.com/?apikey=${KEY}&s=${search}`
+          `http://www.omdbapi.com/?apikey=${KEY}&s=${search}&type=movie`
         );
 
         if (!request.ok) {
@@ -79,7 +80,9 @@ export default function App() {
         if (response.Response === "False") {
           throw new Error(response.Error);
         }
+        const totalPages = Math.ceil(response.totalResults / 10);
         setMovies(response.Search);
+        setResults(response.totalResults);
       } catch (error) {
         console.error(error);
         setErrorMessage(error.message);
@@ -105,17 +108,19 @@ export default function App() {
       <Nav>
         <Logo />
         <Search handleSearch={handleSearch} query={search} />
-        <NumResults movies={movies} />
+        {results && <NumResults results={results} />}
       </Nav>
       <Main>
         <Box>
           {isLoading && <Loader />}
           {!isLoading && !errorMessage && (
-            <List
-              movies={movies}
-              isWatched={false}
-              handleSelect={handleSelect}
-            />
+            <>
+              <List
+                movies={movies}
+                isWatched={false}
+                handleSelect={handleSelect}
+              />
+            </>
           )}
           {errorMessage && <ErrorMessage message={errorMessage} />}
         </Box>
