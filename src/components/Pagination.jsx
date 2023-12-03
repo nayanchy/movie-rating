@@ -1,88 +1,62 @@
-const Pagination = ({
-  pageNumber,
-  setPageNumber,
-  isDisabled,
-  totalPage,
-  currentPage,
-}) => {
-  const generatePageNumbers = () => {
-    const pageNumbers = [];
-    const maxVisiblePages = 5;
+document.addEventListener("DOMContentLoaded", function () {
+  const pages = document.querySelectorAll(".page");
+  const pageNumbers = document.querySelectorAll(".page-number");
+  const prevButton = document.getElementById("prevPage");
+  const nextButton = document.getElementById("nextPage");
+  let currentPage = 0;
 
-    if (totalPage < maxVisiblePages) {
-      // If total pages are less than or equal to maxVisiblePages, show all pages
-      for (let i = 1; i <= totalPage; i++) {
-        pageNumbers.push(i);
+  function showPage(pageNumber) {
+    pages.forEach((page, index) => {
+      if (index === pageNumber) {
+        page.style.display = "block";
+      } else {
+        page.style.display = "none";
       }
-    } else {
-      const halfVisiblePages = Math.floor(maxVisiblePages / 2);
-      let startPage = currentPage - halfVisiblePages;
-      let endPage = currentPage + halfVisiblePages;
-      if (startPage < 1) {
-        startPage = 1;
-        endPage = maxVisiblePages;
-      } else if (endPage > totalPage) {
-        endPage = totalPage;
-        startPage = totalPage - maxVisiblePages + 1;
-      }
+    });
+  }
 
-      // Add ellipses at the beginning and end if necessary
-      if (startPage > 1) {
-        pageNumbers.push(1);
-        if (startPage > 2) {
-          pageNumbers.push("..."); // Ellipsis for skipped pages
-        }
-      }
+  function updateButtons() {
+    prevButton.disabled = currentPage === 0;
+    nextButton.disabled = currentPage === pages.length - 1;
+  }
 
-      // Add visible page numbers
-      for (let i = startPage; i <= endPage; i++) {
-        pageNumbers.push(i);
+  function setActive() {
+    pageNumbers.forEach((page, index) => {
+      if (currentPage === index) {
+        page.classList.add("active");
+      } else {
+        page.classList.remove("active");
       }
+    });
+  }
 
-      // Add ellipses at the end if necessary
-      if (endPage < totalPage) {
-        if (endPage < totalPage - 1) {
-          pageNumbers.push("..."); // Ellipsis for skipped pages
-        }
-        pageNumbers.push(totalPage);
-      }
+  pageNumbers.forEach((page, index) => {
+    page.addEventListener("click", function () {
+      showPage(index);
+      currentPage = index;
+      updateButtons();
+      setActive();
+    });
+  });
+
+  prevButton.addEventListener("click", function () {
+    if (currentPage > 0) {
+      currentPage--;
+      showPage(currentPage);
+      updateButtons();
+      setActive();
     }
-    return pageNumbers;
-  };
+  });
 
-  const pageNumbers = generatePageNumbers();
-  console.log(pageNumbers);
-  return (
-    <>
-      <div className="pagination">
-        <button
-          onClick={() => setPageNumber(pageNumber - 1)}
-          disabled={currentPage === 1}
-        >
-          Previous Page
-        </button>
-        {pageNumbers.map((pageNum, index) => (
-          <span
-            key={index}
-            onClick={() => {
-              if (typeof pageNum === "number") {
-                setPageNumber(pageNum);
-              }
-            }}
-            className={pageNum === currentPage ? "active" : ""}
-          >
-            {pageNum}
-          </span>
-        ))}
-        <button
-          onClick={() => setPageNumber(pageNumber + 1)}
-          disabled={isDisabled} // Disable if no more results
-        >
-          Next Page
-        </button>
-      </div>
-    </>
-  );
-};
+  nextButton.addEventListener("click", function () {
+    if (currentPage < pages.length - 1) {
+      currentPage++;
+      showPage(currentPage);
+      updateButtons();
+      setActive();
+    }
+  });
 
-export default Pagination;
+  showPage(currentPage);
+  updateButtons();
+});

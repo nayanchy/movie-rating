@@ -12,29 +12,6 @@ import Loader from "./components/Loader";
 import ErrorMessage from "./components/Error";
 import SelectedMovie from "./components/SelectedMovie";
 
-const tempWatchedData = [
-  {
-    imdbID: "tt1375666",
-    Title: "Inception",
-    Year: "2010",
-    Poster:
-      "https://m.media-amazon.com/images/M/MV5BMjAxMzY3NjcxNF5BMl5BanBnXkFtZTcwNTI5OTM0Mw@@._V1_SX300.jpg",
-    runtime: 148,
-    imdbRating: 8.8,
-    userRating: 10,
-  },
-  {
-    imdbID: "tt0088763",
-    Title: "Back to the Future",
-    Year: "1985",
-    Poster:
-      "https://m.media-amazon.com/images/M/MV5BZmU0M2Y1OGUtZjIxNi00ZjBkLTg1MjgtOWIyNThiZWIwYjRiXkEyXkFqcGdeQXVyMTQxNzMzNDI@._V1_SX300.jpg",
-    runtime: 116,
-    imdbRating: 8.5,
-    userRating: 9,
-  },
-];
-
 export default function App() {
   const KEY = "23aa28a5";
   const [movies, setMovies] = useState([]);
@@ -80,7 +57,7 @@ export default function App() {
         if (response.Response === "False") {
           throw new Error(response.Error);
         }
-        const totalPages = Math.ceil(response.totalResults / 10);
+        // const totalPages = Math.ceil(response.totalResults / 10);
         setMovies(response.Search);
         setResults(response.totalResults);
       } catch (error) {
@@ -102,6 +79,22 @@ export default function App() {
       setErrorMessage("");
     }
   }, [search]);
+
+  const handleAddtoWatch = (movie) => {
+    const watchedMovieObj = {
+      imdbID: movie.imdbID,
+      Title: movie.Title,
+      Year: movie.Year,
+      Poster: movie.Poster,
+      runtime: +movie.Runtime.split(" ")[0],
+      imdbRating: +movie.imdbRating,
+      userRating: 0,
+    };
+    setWatched((prevWatched) => {
+      return [...prevWatched, watchedMovieObj];
+    });
+    setSelectedMovie(null);
+  };
 
   return (
     <>
@@ -130,6 +123,7 @@ export default function App() {
               movie={selectedMovie}
               onCloseMovie={handleCloseMovie}
               KEY={KEY}
+              onAddToWatch={handleAddtoWatch}
             />
           ) : (
             <>

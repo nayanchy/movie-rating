@@ -3,7 +3,7 @@ import StarRating from "./StarRating";
 import Loader from "./Loader";
 import ErrorMessage from "./Error";
 
-const SelectedMovie = ({ movie, onCloseMovie, KEY }) => {
+const SelectedMovie = ({ movie, onCloseMovie, KEY, onAddToWatch }) => {
   const [selectedMovie, setSelectedMovie] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState(null);
@@ -73,6 +73,9 @@ const SelectedMovie = ({ movie, onCloseMovie, KEY }) => {
         <p>{plot}</p>
         <p>Starring: {actors}</p>
         <p>Directed By: {director}</p>
+        <button className="btn-add" onClick={() => onAddToWatch(selectedMovie)}>
+          Add to watchlist
+        </button>
       </section>
     </div>
   );
