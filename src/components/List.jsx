@@ -1,6 +1,6 @@
 import ListItem from "./ListItem";
 
-const List = ({ movies, isWatched, handleSelect }) => {
+const List = ({ movies, isWatched, handleSelect, onDelete }) => {
   return (
     <ul className={`list ${!isWatched && "list-movies"}`}>
       {movies?.map((movie) => (
@@ -9,6 +9,7 @@ const List = ({ movies, isWatched, handleSelect }) => {
           key={movie.imdbID}
           isWatched={isWatched}
           handleSelect={handleSelect}
+          onDelete={onDelete}
         />
       ))}
     </ul>

@@ -3,10 +3,18 @@ import StarRating from "./StarRating";
 import Loader from "./Loader";
 import ErrorMessage from "./Error";
 
-const SelectedMovie = ({ movie, onCloseMovie, KEY, onAddToWatch }) => {
+const SelectedMovie = ({
+  movie,
+  onCloseMovie,
+  KEY,
+  onAddToWatch,
+  handleUserRating,
+  watched,
+}) => {
   const [selectedMovie, setSelectedMovie] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState(null);
+  const [rating, setRating] = useState(null);
   const {
     Title: title,
     Year: year,
@@ -19,6 +27,15 @@ const SelectedMovie = ({ movie, onCloseMovie, KEY, onAddToWatch }) => {
     Director: director,
     Genre: genre,
   } = selectedMovie;
+
+  const handleRating = (rating) => {
+    setRating(rating);
+    handleUserRating(rating);
+  };
+
+  const isWatched = watched.map((mv) => mv.imdbID).includes(movie);
+
+  const watchedRating = watched.find((mv) => mv.imdbID === movie)?.userRating;
 
   useEffect(() => {
     if (movie) {
@@ -47,6 +64,25 @@ const SelectedMovie = ({ movie, onCloseMovie, KEY, onAddToWatch }) => {
     }
   }, [movie]);
 
+  useEffect(() => {
+    if (!title) return;
+    document.title = `Movie:${title}`;
+
+    return () => (document.title = "Movie Popcorn");
+  }, [title]);
+
+  useEffect(() => {
+    const callback = (e) => {
+      if (e.code === "Escape") {
+        onCloseMovie();
+        console.log("Closing");
+      }
+    };
+    document.addEventListener("keydown", callback);
+
+    return () => document.removeEventListener("keydown", callback);
+  }, [onCloseMovie]);
+
   const renderedHTML = (
     <div className="details">
       <header>
@@ -68,14 +104,31 @@ const SelectedMovie = ({ movie, onCloseMovie, KEY, onAddToWatch }) => {
       </header>
       <section>
         <div className="rating">
-          <StarRating maxRating={10} size={24} />
+          {!isWatched && (
+            <>
+              <StarRating
+                maxRating={10}
+                size={24}
+                onSetRating={handleRating}
+                defaultRating={null}
+              />
+              {rating && (
+                <button
+                  className="btn-add"
+                  onClick={() => onAddToWatch(selectedMovie)}
+                >
+                  Add to watchlist
+                </button>
+              )}
+            </>
+          )}
+          {isWatched && (
+            <p>You have already rated the movie with {watchedRating} ⭐️</p>
+          )}
         </div>
         <p>{plot}</p>
         <p>Starring: {actors}</p>
         <p>Directed By: {director}</p>
-        <button className="btn-add" onClick={() => onAddToWatch(selectedMovie)}>
-          Add to watchlist
-        </button>
       </section>
     </div>
   );

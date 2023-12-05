@@ -21,6 +21,7 @@ export default function App() {
   const [errorMessage, setErrorMessage] = useState("");
   const [selectedMovie, setSelectedMovie] = useState(null);
   const [results, setResults] = useState(null);
+  const [rating, setRating] = useState(null);
 
   const handleSearch = (query) => {
     setSearch(query);
@@ -29,8 +30,8 @@ export default function App() {
   const handleSelect = (movie) => {
     if (movie) {
       const movieId = movie.imdbID;
-      if (selectedMovie && selectedMovie.imdbID === movieId) {
-        setSelectedMovie(null);
+      if (selectedMovie && selectedMovie === movieId) {
+        handleCloseMovie();
       } else {
         setSelectedMovie(movieId);
       }
@@ -80,6 +81,10 @@ export default function App() {
     }
   }, [search]);
 
+  const handleRating = (rating) => {
+    setRating(rating);
+  };
+
   const handleAddtoWatch = (movie) => {
     const watchedMovieObj = {
       imdbID: movie.imdbID,
@@ -88,12 +93,19 @@ export default function App() {
       Poster: movie.Poster,
       runtime: +movie.Runtime.split(" ")[0],
       imdbRating: +movie.imdbRating,
-      userRating: 0,
+      userRating: +rating,
     };
     setWatched((prevWatched) => {
       return [...prevWatched, watchedMovieObj];
     });
-    setSelectedMovie(null);
+    handleCloseMovie();
+    setRating(0);
+  };
+
+  const handleDeleteWatched = (id) => {
+    setWatched((prev) => {
+      return prev.filter((movie) => movie.imdbID !== id);
+    });
   };
 
   return (
@@ -124,6 +136,8 @@ export default function App() {
               onCloseMovie={handleCloseMovie}
               KEY={KEY}
               onAddToWatch={handleAddtoWatch}
+              handleUserRating={handleRating}
+              watched={watched}
             />
           ) : (
             <>
@@ -132,6 +146,7 @@ export default function App() {
                 movies={watched}
                 isWatched={true}
                 selectedMovie={selectedMovie}
+                onDelete={handleDeleteWatched}
               />
             </>
           )}

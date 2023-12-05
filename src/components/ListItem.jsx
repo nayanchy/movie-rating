@@ -1,4 +1,4 @@
-const ListItem = ({ movie, isWatched, handleSelect }) => {
+const ListItem = ({ movie, isWatched, handleSelect, onDelete }) => {
   const handleClick = () => {
     if (!isWatched) {
       // console.log(movie);
@@ -18,20 +18,25 @@ const ListItem = ({ movie, isWatched, handleSelect }) => {
         </div>
       )}
       {isWatched && (
-        <div>
-          <p>
-            <span>⭐️</span>
-            <span>{movie.imdbRating}</span>
-          </p>
-          <p>
-            <span>🌟</span>
-            <span>{movie.userRating}</span>
-          </p>
-          <p>
-            <span>⏳</span>
-            <span>{movie.runtime} min</span>
-          </p>
-        </div>
+        <>
+          <div>
+            <p>
+              <span>⭐️</span>
+              <span>{movie.imdbRating}</span>
+            </p>
+            <p>
+              <span>🌟</span>
+              <span>{movie.userRating}</span>
+            </p>
+            <p>
+              <span>⏳</span>
+              <span>{movie.runtime} min</span>
+            </p>
+          </div>
+          <button className="btn-delete" onClick={() => onDelete(movie.imdbID)}>
+            X
+          </button>
+        </>
       )}
     </li>
   );
