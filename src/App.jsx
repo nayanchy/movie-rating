@@ -92,7 +92,7 @@ export default function App() {
       Year: movie.Year,
       Poster: movie.Poster,
       runtime: +movie.Runtime.split(" ")[0],
-      imdbRating: +movie.imdbRating,
+      imdbRating: isNaN(+movie.imdbRating) ? 0 : +movie.imdbRating,
       userRating: +rating,
     };
     setWatched((prevWatched) => {
