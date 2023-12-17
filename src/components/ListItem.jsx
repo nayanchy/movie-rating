@@ -1,7 +1,6 @@
 const ListItem = ({ movie, isWatched, handleSelect, onDelete }) => {
   const handleClick = () => {
     if (!isWatched) {
-      // console.log(movie);
       handleSelect(movie);
     }
   };

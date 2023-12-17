@@ -15,7 +15,10 @@ import SelectedMovie from "./components/SelectedMovie";
 export default function App() {
   const KEY = "23aa28a5";
   const [movies, setMovies] = useState([]);
-  const [watched, setWatched] = useState([]);
+  const [watched, setWatched] = useState(() => {
+    const savedData = JSON.parse(localStorage.getItem("movies"));
+    return savedData;
+  });
   const [search, setSearch] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
@@ -39,6 +42,33 @@ export default function App() {
   };
 
   const handleCloseMovie = () => setSelectedMovie(null);
+
+  const handleRating = (rating) => {
+    setRating(rating);
+  };
+
+  const handleAddtoWatch = (movie) => {
+    const watchedMovieObj = {
+      imdbID: movie.imdbID,
+      Title: movie.Title,
+      Year: movie.Year,
+      Poster: movie.Poster,
+      runtime: +movie.Runtime.split(" ")[0],
+      imdbRating: isNaN(+movie.imdbRating) ? 0 : +movie.imdbRating,
+      userRating: +rating,
+    };
+    setWatched((prevWatched) => {
+      return [...prevWatched, watchedMovieObj];
+    });
+    handleCloseMovie();
+    setRating(0);
+  };
+
+  const handleDeleteWatched = (id) => {
+    setWatched((prev) => {
+      return prev.filter((movie) => movie.imdbID !== id);
+    });
+  };
 
   useEffect(() => {
     const fetchMovies = async () => {
@@ -81,32 +111,9 @@ export default function App() {
     }
   }, [search]);
 
-  const handleRating = (rating) => {
-    setRating(rating);
-  };
-
-  const handleAddtoWatch = (movie) => {
-    const watchedMovieObj = {
-      imdbID: movie.imdbID,
-      Title: movie.Title,
-      Year: movie.Year,
-      Poster: movie.Poster,
-      runtime: +movie.Runtime.split(" ")[0],
-      imdbRating: isNaN(+movie.imdbRating) ? 0 : +movie.imdbRating,
-      userRating: +rating,
-    };
-    setWatched((prevWatched) => {
-      return [...prevWatched, watchedMovieObj];
-    });
-    handleCloseMovie();
-    setRating(0);
-  };
-
-  const handleDeleteWatched = (id) => {
-    setWatched((prev) => {
-      return prev.filter((movie) => movie.imdbID !== id);
-    });
-  };
+  useEffect(() => {
+    localStorage.setItem("movies", JSON.stringify(watched));
+  }, [watched]);
 
   return (
     <>
